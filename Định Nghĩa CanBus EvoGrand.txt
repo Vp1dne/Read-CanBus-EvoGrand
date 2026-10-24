@@ -1,0 +1,171 @@
+================================================================================
+VINFAST EVO GRAND (PIN 2.4KWH) CAN BUS ID MAP FOR ESP32-S3 DevByNVP
+================================================================================
+
+--------------------------------------------------------------------------------
+1. NHÓM ĐIỀU KHIỂN NGUỒN & TRẠNG THÁI XE (VCU / SMARTKEY)
+--------------------------------------------------------------------------------
+
+[ID: 0x101] - Trạng thái Khóa điện (Ignition State)
+  - Độ dài (DLC): 3 Bytes
+  - Cấu trúc Bit/Byte:
+    * Byte 0: Trạng thái nguồn chính (0x00 = OFF | 0x11 = ON)
+    * Byte 1: Trạng thái hệ thống phụ ACC (Thường cố định 0x10)
+
+[ID: 0x102] - Trạng thái Lái & Cảm biến an toàn 
+  - Độ dài (DLC): 8 Bytes 
+  - Cấu trúc Bit/Byte:
+    * Byte 0: Trạng thái Nút P và Chế độ lái (Gộp chung)
+      + Dải 0x20 (Đầu 2): Đang khoá P
+      + Dải 0x30 (Đầu 3): Đã nhả P (Ready)
+      + Số chẵn (0x20, 0x30): Chế độ ECO
+      + Số lẻ (0x21, 0x31): Chế độ SPORT
+      -> Công thức code: `isP = (D0 & 0xF0) == 0x20`; `isSport = (D0 & 0x01) == 0x01`
+    * Byte 1: Cảm biến chân chống nghiêng
+      + 0x00: Đá lên (An toàn)
+      + 0x10: Gạt xuống (Cắt động cơ)
+    * Byte 7: Rolling Counter (Tự động cộng thêm 1 sau mỗi vài giây).
+
+--------------------------------------------------------------------------------
+2. NHÓM ĐIỀU KHIỂN ĐỘNG CƠ & VẬN HÀNH (MCU / ODO)
+--------------------------------------------------------------------------------
+
+[ID: 0x201] - Thông số Vận hành & Phanh điện
+  - Độ dài (DLC): 8 Bytes
+  - Cấu trúc Bit/Byte:
+    * Byte 0 & 1: Tốc độ vòng tua động cơ (RPM). Công thức: `(D0 << 8) | D1`
+    * Byte 4 & 5: Dữ liệu đồng bộ ODO nội bộ của MCU.
+    * Byte 7: Cảm biến Phanh / Regen
+      + 0x00: Nhả phanh
+      + 0x10: Đang bóp phanh (Cắt ga, kích hoạt Regen)
+
+[ID: 0x208] - Thông số chuyên sâu MCU (Lực kéo & Nhiệt độ)
+  - Độ dài (DLC): 8 Bytes
+  - Cấu trúc Bit/Byte:
+    * Byte 1: Lực kéo tức thời / Dòng Pha (Phase Current). 
+      + Kiểu dữ liệu bù 2 (Signed 8-bit). 
+      + Số dương: Đang kéo ga có tải. Số âm: Đang hãm phanh điện (Regen).
+    * Byte 3: Nhiệt độ MCU/Động cơ (Tăng dần khi ép tải liên tục).
+    * Byte 4, 5, 6, 7: Mã lỗi phần cứng MCU (Mặc định 00 00 00 00).
+
+[ID: 0x400] - Bộ đếm Quãng đường HMI (ODO / Trip)
+  - Độ dài (DLC): 8 Bytes
+  - Cấu trúc Bit/Byte:
+    * Byte 6 & 7: Bộ đếm mét lăn bánh. Khớp hoàn toàn với Byte 4-5 của 0x201.
+    * Ghi chú: Trip hành trình không có byte độc lập. (Cách xử lý trên Code: Lấy ODO hiện tại trừ đi ODO lúc bật khoá).
+
+================================================================================
+VINFAST EVO GRAND (PIN 2.4KWH) CAN BUS ID MAP FOR ESP32-S3 DevByNVP
+================================================================================
+
+--------------------------------------------------------------------------------
+1. NHÓM ĐIỀU KHIỂN NGUỒN & TRẠNG THÁI XE (VCU / SMARTKEY)
+--------------------------------------------------------------------------------
+
+[ID: 0x101] - Trạng thái Khóa điện (Ignition State)
+  - Độ dài (DLC): 3 Bytes
+  - Cấu trúc Bit/Byte:
+    * Byte 0: Trạng thái nguồn chính (0x00 = OFF | 0x11 = ON)
+    * Byte 1: Trạng thái hệ thống phụ ACC (Thường cố định 0x10)
+
+[ID: 0x102] - Trạng thái Lái & Cảm biến an toàn 
+  - Độ dài (DLC): 8 Bytes 
+  - Cấu trúc Bit/Byte:
+    * Byte 0: Trạng thái Nút P và Chế độ lái (Gộp chung)
+      + Dải 0x20 (Đầu 2): Đang khoá P
+      + Dải 0x30 (Đầu 3): Đã nhả P (Ready)
+      + Số chẵn (0x20, 0x30): Chế độ ECO
+      + Số lẻ (0x21, 0x31): Chế độ SPORT
+      -> Code: isP = ((D0 & 0xF0) == 0x20); isSport = ((D0 & 0x01) == 0x01);
+    * Byte 1: Cảm biến chân chống nghiêng
+      + 0x00: Đá lên (An toàn)
+      + 0x10: Gạt xuống (Cắt động cơ)
+    * Byte 7: Rolling Counter (Tự động tăng dần theo thời gian).
+
+--------------------------------------------------------------------------------
+2. NHÓM ĐIỀU KHIỂN ĐỘNG CƠ & VẬN HÀNH (MCU / ODO)
+--------------------------------------------------------------------------------
+
+[ID: 0x201] - Thông số Vận hành & Phanh điện
+  - Độ dài (DLC): 8 Bytes
+  - Cấu trúc Bit/Byte:
+    * Byte 0 & 1: Tốc độ vòng tua động cơ (RPM). Công thức: (D0 << 8) | D1
+    * Byte 3, 4, 5: ODO đồng bộ nội bộ MCU (Đơn vị: 0.1 Km -> Chia 10.0f)
+    * Byte 7: Cảm biến Phanh / Regen
+      + 0x00: Nhả phanh
+      + 0x10: Đang bóp phanh (Cắt ga, kích hoạt phanh điện)
+
+[ID: 0x208] - Thông số chuyên sâu MCU (Lực kéo & Nhiệt độ)
+  - Độ dài (DLC): 8 Bytes
+  - Cấu trúc Bit/Byte:
+    * Byte 1: Lực kéo tức thời / Dòng Pha (Phase Current). 
+      + Kiểu Signed 8-bit (bù 2). 
+      + Số dương: Kéo ga có tải. Số âm: Hãm phanh điện (Regen).
+    * Byte 3: Nhiệt độ MCU / Mâm động cơ (°C).
+    * Byte 4, 5, 6, 7: Mã lỗi phần cứng MCU (Mặc định 00 00 00 00).
+
+[ID: 0x400] - Bộ đếm Quãng đường HMI (ODO / Trip)
+  - Độ dài (DLC): 8 Bytes
+  - Cấu trúc Bit/Byte:
+    * Byte 5, 6, 7: ODO tổng hiển thị trên đồng hồ (Đơn vị: 0.1 Km -> Chia 10.0f).
+    * Ghi chú: Trip hành trình do HMI tự tính, xử lý trên code: Trip = ODO_hien_tai - ODO_luc_bat_khoa.
+
+--------------------------------------------------------------------------------
+3. NHÓM QUẢN LÝ PIN LFP 2.4KWH (BMS - BATTERY MANAGEMENT SYSTEM)
+--------------------------------------------------------------------------------
+
+[ID: 0x300] - Mã Serial khối Pin
+  - Độ dài (DLC): 8 Bytes (Chứa mã định danh phần cứng pin VF).
+
+[ID: 0x303] - BMS Heartbeat
+  - Độ dài (DLC): 8 Bytes (Byte 0 tăng tuần hoàn báo trạng thái sống).
+
+[ID: 0x309] - Điện áp tổng và Dòng điện tổng (Pack Voltage & Current)
+  - Độ dài (DLC): 8 Bytes
+  - Cấu trúc Bit/Byte:
+    * Byte 2 & 3: Điện áp tổng. Công thức: ((D2 << 8) | D3) * 0.002 (V)
+    * Byte 6 & 7: Dòng điện tổng Signed 16-bit. Công thức: rawI * 0.05 (A)
+      + Số Âm: Dòng xả tải (kéo ga).
+      + Số Dương: Dòng nạp / phanh điện Regen.
+
+[ID: 0x30A] - Phần trăm Pin (SOC), Sức khoẻ (SOH) & Chu kỳ sạc
+  - Độ dài (DLC): 8 Bytes
+  - Cấu trúc Bit/Byte:
+    * Byte 0 & Byte 3: Độ chai pin / Sức khoẻ (SOH) - Đơn vị: %
+    * Byte 1 & Byte 2: Phần trăm dung lượng pin (SOC) - Đơn vị: %
+    * Byte 4 & Byte 5: Số chu kỳ sạc (Cycle Count): (D4 << 8) | D5
+
+[ID: 0x320] - Nhiệt độ Pin tổng quan
+  - Độ dài (DLC): 5 Bytes
+  - Cấu trúc Bit/Byte:
+    * Byte 0: Nhiệt độ trung bình các cell (°C)
+    * Byte 3: Nhiệt độ Pin hiển thị lên màn hình HMI (°C)
+
+[ID: 0x328] & [ID: 0x329] - Chi tiết cảm biến nhiệt độ Cell
+  - 0x328: Byte 0 = Cảm biến T1 (°C), Byte 1 = Cảm biến T2 (°C)
+  - 0x329: Byte 0 = Cảm biến T3 (°C), Byte 1 = Cảm biến T4 (°C)
+
+--------------------------------------------------------------------------------
+4. NHÓM ĐIỆN ÁP TỪNG CELL PIN LFP (HỆ 19S)
+--------------------------------------------------------------------------------
+- Công thức giải mã: ((Dx << 8) | Dy) / 10000.0 (Volt)
+
+[ID: 0x310] -> Tóm tắt Cell: 
+  * Byte 0-1: Điện áp trung bình
+  * Byte 2-3: Điện áp Cell thấp nhất
+  * Byte 4:   Thứ tự Cell thấp nhất (1 - 19)
+  * Byte 5-6: Điện áp Cell cao nhất
+  * Byte 7:   Thứ tự Cell cao nhất (1 - 19)
+
+[ID: 0x311] -> Điện áp Cell 1  đến Cell 4
+[ID: 0x312] -> Điện áp Cell 5  đến Cell 8
+[ID: 0x313] -> Điện áp Cell 9  đến Cell 12
+[ID: 0x314] -> Điện áp Cell 13 đến Cell 16
+[ID: 0x31A] -> Điện áp Cell 17 đến Cell 19 (Byte 0-5), Byte 6-7 là 00 00
+[ID: 0x31B] -> Blank Frame (00 00 00 00 00 00 00 00)
+
+--------------------------------------------------------------------------------
+5. GHI CHÚ KỸ THUẬT QUAN TRỌNG TỪ QUÁ TRÌNH REVERSE ENGINEERING
+--------------------------------------------------------------------------------
+- Không có dữ liệu góc vặn tay ga (Throttle Position) trên CAN Bus. Tay ga Hall 0.8V-4.2V được nối dây cứng trực tiếp vào MCU. Khi ở chế độ P, MCU tự động cắt tín hiệu điện áp này ở cấp độ phần cứng/firmware nội bộ.
+- Để hiển thị gia tốc tay ga trên màn hình độ, lấy dữ liệu Phase Current (0x208 - Byte 1) làm hệ quy chiếu (Phản hồi tức thời với độ trễ ~0ms).
