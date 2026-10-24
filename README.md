@@ -1,0 +1,2 @@
+# Read-CanBus-EvoGrand
+ READ CAN BUS VINFAST EVO GRAND (PIN LFP 2.4KWH - HỆ 19S)
