@@ -4,7 +4,7 @@
 
 **Dự án:** Nghiên cứu, dịch ngược và phát triển hệ sinh thái CAN Bus mã nguồn mở
 
-*Dự án cũng có thể được tham khảo và phát triển cho các dòng xe điện sử dụng pin 1.5 hoặc 2.4 của Vinfast (EvoGrandLite, Feliz...)*
+*Dự án cũng có thể được tham khảo và phát triển cho các dòng xe điện sử dụng pin 1.2 hoặc 2.4 của Vinfast (EvoGrandLite, Feliz...)*
 
 > **LƯU Ý:** TOÀN BỘ HỆ THỐNG CỦA EVOGRAND/GRANDLITE ĐỀU SỬ DỤNG TỐC ĐỘ 250KBPS
 
